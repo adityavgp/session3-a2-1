@@ -1,0 +1,50 @@
+package com.packages.finddir;
+
+
+        import java.io.IOException;
+        import java.net.URI;
+        import java.net.URISyntaxException;
+
+        import org.apache.hadoop.conf.Configuration;
+        import org.apache.hadoop.fs.FileStatus;
+        import org.apache.hadoop.fs.FileSystem;
+        //import org.apache.hadoop.fs.FileUtil;
+        import org.apache.hadoop.fs.Path;
+
+        public class findfilesbetweendates{
+          public static void main(String[] args) throws IOException, URISyntaxException
+          {
+              Configuration config = new Configuration();
+              //Path path = new Path(args[0]);
+              //FileStatus fileStatus = hdfs.getFileStatus(path);
+              //long modificationTime = fileStatus.getModificationTime();
+              //System.out.println(modificationTime);
+                //2. Get the instance of the HDFS
+                FileSystem hdfs = FileSystem.get(new URI("hdfs://localhost:8020"), config);
+                //3. Get the meta-data of the desired directory
+                FileStatus[] fileStatus = hdfs.listStatus(new Path(args[0]));
+                //4. Using FileUtil, getting the Paths for all the FileStatus
+               // Path[] paths = FileUtil.stat2Paths(fileStatus);
+                //5. Iterate through the directory and display the files in it
+                System.out.println("***** files modified *****");
+                
+                for(FileStatus f:fileStatus)
+                {
+                    if(f.isDirectory())
+                    {
+                        FileStatus[] fs = hdfs.listStatus((f.getPath()));
+                        for(FileStatus fss:fs)
+                        {
+                            System.out.println(fss.getPath());
+                            System.out.println("******************");
+                            System.out.println(fss.getModificationTime());
+                        }
+                        
+                    }
+                    else
+                        System.out.println(f.getPath().toString());
+                  
+                }
+              
+          }
+        }
